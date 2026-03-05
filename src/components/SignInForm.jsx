@@ -13,18 +13,14 @@ import { Input } from '@/components/ui/input';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signInSchema } from '../lib/shemas';
-import { Link, useNavigate } from 'react-router-dom';
-import { da } from 'zod/locales';
-import axios from 'axios';
-import { toast } from 'sonner';
-import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
+import useAuthCall from './hooks/useAuthCall';
+
+
 import { updateUserInfo } from '../features/authSlice';
 
 export default function SignInForm({ className, ...props }) {
-
-  const dispatch = useDispatch();
-
-  const navigate = useNavigate();
+  const { signIn } = useAuthCall(); // useAuthCall custom hook'umuzu kullanarak signIn fonksiyonunu aliyoruz. Boylece onSubmit fonksiyonumuzun icinde signIn fonksiyonunu kullanarak login islemini yapabilecegiz.
 
   const form = useForm({
     resolver: zodResolver(signInSchema),
@@ -38,29 +34,8 @@ export default function SignInForm({ className, ...props }) {
   // console.log(isSubmitting);
 
   async function onSubmit(userCredentials) {
-    console.log(userCredentials);
-    try{
-      const { data } = await axios.post('https://11121.fullstack.clarusway.com/auth/login',userCredentials);
-      console.log(data);
-
-      dispatch(updateUserInfo(data)); // authSlice'daki updateUserInfo reducer'ini dispatch ederek kullanici bilgilerini ve token'ini store'a kaydediyoruz. Bu sayede diger componentlerde useSelector hook'u ile auth slice'indaki currentUser veya token bilgisine erisebiliriz.
-
-      navigate('/stock'); // login islemi basarili olduktan sonra kullaniciyi stock sayfasina yonlendiriyoruz.
-
-
-      toast.success("Login Successful", {
-        description:`Welcome back, ${data.user.username}!`,
-      });
-
-    }catch (error) {
-      // console.log("error:", error);
-      toast.error("Login Faild", {
-        description:
-          error.response?.data?.message ||
-          error?.message ||
-          "Please check your credentials",
-      });
-    }
+    // console.log(userCredentials);
+    await signIn(userCredentials); // onSubmit fonksiyonumuzun icinde signIn
   }
 
   return (
@@ -134,7 +109,7 @@ export default function SignInForm({ className, ...props }) {
 
               <Field>
                 <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "Signing in..." : "Sign In"}
+                  {isSubmitting ? 'Signing in...' : 'Sign In'}
                 </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">

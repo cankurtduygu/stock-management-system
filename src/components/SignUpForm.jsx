@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Field,
   FieldDescription,
@@ -8,63 +8,38 @@ import {
   FieldError,
   FieldLabel,
   FieldSeparator,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { signUpSchema } from "../lib/shemas";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { toast } from "sonner";
-import { useDispatch } from "react-redux";
-import { updateUserInfo } from "@/features/authSlice";
+} from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { signUpSchema } from '../lib/shemas';
+import { Link } from 'react-router-dom';
+import useAuthCall from './hooks/useAuthCall';
+
+
+
 
 export function SignUpForm({ className, ...props }) {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const { signUp } = useAuthCall();
+  const { isSubmitting } = form.formState;
 
   const form = useForm({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      username: "",
-      password: "",
-      email: "",
-      firstName: "",
-      lastName: "",
+      username: '',
+      password: '',
+      email: '',
+      firstName: '',
+      lastName: '',
     },
   });
 
-  const { isSubmitting } = form.formState;
-  // console.log(isSubmitting);
-
   async function onSubmit(userCredentials) {
-    try {
-      const { data } = await axios.post(
-        "https://11510.fullstack.clarusway.com/users",
-        userCredentials,
-      );
-      // console.log(data);
-
-      dispatch(updateUserInfo(data));
-
-      toast.success("Login Successfull!", {
-        description: `Welcome back, ${data.data.username}`,
-      });
-
-      navigate("/stock");
-    } catch (error) {
-      // console.log("error:", error);
-      toast.error("Login Faild", {
-        description:
-          error.response?.data?.message ||
-          error?.message ||
-          "Please check your credentials",
-      });
-    }
+    await signUp(userCredentials);
   }
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
           <form
@@ -203,14 +178,14 @@ export function SignUpForm({ className, ...props }) {
               />
               <Field>
                 <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "Signing up.." : "Sign Up"}
+                  {isSubmitting ? 'Signing up..' : 'Sign Up'}
                 </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                 Or continue with
               </FieldSeparator>
               <FieldDescription className="text-center">
-                Already have an account{" "}
+                Already have an account{' '}
                 <Link
                   to="/sign-in"
                   className="underline underline-offset-2 hover:text-primary"
