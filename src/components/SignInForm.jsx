@@ -14,10 +14,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signInSchema } from '../lib/shemas';
 import { Link } from 'react-router-dom';
-import useAuthCall from './hooks/useAuthCall';
+import useAuthCall from '../hooks/useAuthCall';
 
-
-import { updateUserInfo } from '../features/authSlice';
 
 export default function SignInForm({ className, ...props }) {
   const { signIn } = useAuthCall(); // useAuthCall custom hook'umuzu kullanarak signIn fonksiyonunu aliyoruz. Boylece onSubmit fonksiyonumuzun icinde signIn fonksiyonunu kullanarak login islemini yapabilecegiz.
@@ -35,7 +33,7 @@ export default function SignInForm({ className, ...props }) {
 
   async function onSubmit(userCredentials) {
     // console.log(userCredentials);
-    await signIn(userCredentials); // onSubmit fonksiyonumuzun icinde signIn
+    await signIn(userCredentials); // onSubmit fonksiyonumuzun icinde signIn fonksiyonunu kullanarak login islemini yapacagiz. userCredentials parametresi, formdan gelen email ve password bilgilerini icerecek. signIn fonksiyonu async oldugu icin await kullanarak islemin tamamlanmasini bekleyecegiz.
   }
 
   return (

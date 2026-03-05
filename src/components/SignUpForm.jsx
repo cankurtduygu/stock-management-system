@@ -14,10 +14,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signUpSchema } from '../lib/shemas';
 import { Link } from 'react-router-dom';
-import useAuthCall from './hooks/useAuthCall';
-
-
-
+import useAuthCall from '../hooks/useAuthCall';
 
 export function SignUpForm({ className, ...props }) {
   const { signUp } = useAuthCall();
