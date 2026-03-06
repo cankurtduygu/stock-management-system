@@ -29,10 +29,12 @@ import {
 } from "@/components/ui/sidebar"
 import { useSelector } from "react-redux"
 import { selectCurrentUser } from "@/features/authSlice";
+import useAuthCall from "@/hooks/useAuthCall"
 
 export function NavUser() {
   const currentUser = useSelector(selectCurrentUser);
   const { isMobile } = useSidebar()
+  const { signOut } = useAuthCall();
 
   return (
     <SidebarMenu>
@@ -93,7 +95,7 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem  onSelect={signOut}>
               <LogOut />
               Log out
             </DropdownMenuItem>

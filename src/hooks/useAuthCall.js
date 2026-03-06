@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
-import { updateUserInfo } from '@/features/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { fillAuth, cleanAuth, selectAuthToken } from '@/features/authSlice';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,7 +8,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 const useAuthCall = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const token = useSelector(selectAuthToken);
+  const token = useSelector(selectAuthToken);
 
   const signIn = async (userCredentials) => {
     try {
@@ -18,7 +18,7 @@ const useAuthCall = () => {
       );
       // console.log(data);
 
-      dispatch(updateUserInfo(data));
+      dispatch(fillAuth(data));
 
       toast.success('Login Successfull!', {
         description: `Welcome back, ${data.user.username}`,
@@ -41,7 +41,7 @@ const useAuthCall = () => {
       const { data } = await axios.post(`${BASE_URL}users`, userCredentials);
       // console.log(data);
 
-      dispatch(updateUserInfo(data));
+      dispatch(fillAuth(data));
 
       toast.success('Login Successfull!', {
         description: `Welcome back, ${data.data.username}`,
@@ -59,26 +59,26 @@ const useAuthCall = () => {
     }
   };
 
-  const singOut = async () => {
-    // try {
-    //   await axios(`${BASE_URL}users`, {
-    //     headers: {
-    //       Authorization: `Token ${token}`,
-    //     },
-    //   });
-    //   dispatch(cleanAuth());
-    //   navigate("/");
-    // } catch (error) {
-    //   toast.error("Login Faild", {
-    //     description:
-    //       error.response?.data?.message ||
-    //       error?.message ||
-    //       "Please check your credentials",
-    //   });
-    // }
+  const signOut = async () => {
+    try {
+      await axios(`${BASE_URL}users`, {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+      dispatch(cleanAuth());
+      navigate('/');
+    } catch (error) {
+      toast.error('Login Faild', {
+        description:
+          error.response?.data?.message ||
+          error?.message ||
+          'Please check your credentials',
+      });
+    }
   };
 
-  return { signIn, signUp, singOut };
+  return { signIn, signUp, signOut };
 };
 
 export default useAuthCall;

@@ -8,17 +8,23 @@ import DashboardLayout from './components/shared/DashboardLayout';
 import Error from './pages/Error';
 import { Navigate, Outlet } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { store } from './state/store';
+import store, { persistor } from './state/store';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from './features/authSlice';
 import { Toaster } from '@/components/ui/sonner';
-
-
+import { useTheme } from '@/hooks/useTheme';
+import { PersistGate } from 'redux-persist/integration/react';
 
 const router = createBrowserRouter([
   { path: '/', element: <Home />, errorElement: <Error /> },
-  { path: 'sign-in', element: <SignIn /> },
-  { path: 'sign-up', element: <SignUp /> },
+  {
+    element: <PublicOnlyRoute />,
+    children: [
+      { path: 'sign-in', element: <SignIn /> },
+      { path: 'sign-up', element: <SignUp /> },
+    ],
+  },
+
   {
     path: 'stock',
     element: <ProtectedRoute />,
@@ -60,17 +66,26 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-      {/* <h1>app</h1> */}
       <Provider store={store}>
-      <RouterProvider router={router} />
-      <Toaster richColors position='top-right' /> {/* Buna detayli bak baska ne öyellikleri var*/}
+        <PersistGate loading={null} persistor={persistor}>
+          <ThemeSync />
+          <RouterProvider router={router} />
+          <Toaster richColors position="top-right" />{' '}
+          {/* Buna detayli bak baska ne öyellikleri var*/}
+        </PersistGate>
       </Provider>
-      
     </>
   );
 }
 
 export default App;
+
+function PublicOnlyRoute() {
+  //currentUser varsa login olduktan sonra sign-in sayfasina gelmesini istemeyiz. Bu nedenle currentUser varsa stock sayfasina yönlendirecegiz, yoksa Outlet ile çocuk componentleri render edecegiz.
+  const currentUser = useSelector(selectCurrentUser);
+
+  return currentUser ? <Navigate to="/stock" replace /> : <Outlet />;
+}
 
 function ProtectedRoute() {
   // console.log(user);
@@ -79,4 +94,9 @@ function ProtectedRoute() {
   const currentUser = useSelector(selectCurrentUser); // Replace with actual authentication logic
 
   return currentUser ? <Outlet /> : <Navigate to="/sign-in" />;
+}
+
+function ThemeSync() {
+  useTheme();
+  return null;
 }

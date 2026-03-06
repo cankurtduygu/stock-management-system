@@ -179,7 +179,7 @@ export function SignUpForm({ className, ...props }) {
                 </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-                Or continue with
+                <Link to="/">Back to Home</Link>
               </FieldSeparator>
               <FieldDescription className="text-center">
                 Already have an account{' '}

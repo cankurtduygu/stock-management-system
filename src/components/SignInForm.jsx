@@ -111,11 +111,11 @@ export default function SignInForm({ className, ...props }) {
                 </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
-                Or continue with
+                <Link to="/">Back to Home</Link>
               </FieldSeparator>
 
               <FieldDescription className="text-center">
-                Don&apos;t have an account? <a href="#">Sign up</a>
+                Don&apos;t have an account? <Link to="/sign-up">Sign up</Link>
               </FieldDescription>
             </FieldGroup>
           </form>
