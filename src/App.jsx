@@ -14,6 +14,10 @@ import { selectCurrentUser } from './features/authSlice';
 import { Toaster } from '@/components/ui/sonner';
 import { useTheme } from '@/hooks/useTheme';
 import { PersistGate } from 'redux-persist/integration/react';
+import Firms from './pages/Firms';
+import Brands from './pages/Brands';
+import FirmDetail from './pages/FirmDetail';
+
 
 const router = createBrowserRouter([
   { path: '/', element: <Home />, errorElement: <Error /> },
@@ -39,11 +43,15 @@ const router = createBrowserRouter([
           },
           {
             path: 'brands',
-            element: <div>Brands Page</div>,
+            element: <Brands />,
           },
           {
             path: 'firms',
-            element: <div>Firms Page</div>,
+            element: <Firms />,
+          },
+           {
+            path: 'firms/:id',
+            element: <FirmDetail />,
           },
           {
             path: 'products',
@@ -68,6 +76,7 @@ function App() {
     <>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
+        {/* PersistGate, uygulamanın state'ini tarayıcıda saklamak ve yeniden yüklemek için kullanılır. Bu sayede kullanıcı sayfayı yenilediğinde veya uygulamayı kapatıp açtığında state korunur. */}
           <ThemeSync />
           <RouterProvider router={router} />
           <Toaster richColors position="top-right" />{' '}
@@ -97,6 +106,8 @@ function ProtectedRoute() {
 }
 
 function ThemeSync() {
+
+  //Bu component, uygulamanın tema durumunu yönetmek ve senkronize etmek için kullanılır. useTheme hook'u ile temayı alır ve günceller. Şu anda herhangi bir görsel çıktı üretmez, sadece temayı yönetir. İleride tema değiştirme özellikleri eklenebilir veya uygulamanın farklı bölümlerinde temaya erişim sağlanabilir.
   useTheme();
   return null;
 }

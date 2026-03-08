@@ -60,8 +60,9 @@ const useAuthCall = () => {
   };
 
   const signOut = async () => {
+    await new Promise((res) => setTimeout(res, 200)); // Simulate a delay for better UX
     try {
-      await axios(`${BASE_URL}users`, {
+      await axios(`${BASE_URL}auth/logout`, {
         headers: {
           Authorization: `Token ${token}`,
         },
