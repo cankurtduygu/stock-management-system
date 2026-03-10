@@ -12,7 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signInSchema } from '../lib/shemas';
+import { signInSchema } from '../lib/schemas';
 import { Link } from 'react-router-dom';
 import useAuthCall from '../hooks/useAuthCall';
 

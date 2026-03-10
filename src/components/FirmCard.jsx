@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 
-export default function FirmCard({ firm }) {
+export default function FirmCard({ firm, onEdit }) {
   return (
     <Card className="relative mx-auto w-full max-w-sm pt-0 flex">
       {/* <div className="absolute inset-0 z-30 aspect-video bg-black/35" /> */}
@@ -35,7 +35,7 @@ export default function FirmCard({ firm }) {
         <Button size="sm" className="flex-1">
           <Link to={`/stock/firms/${firm._id}`}>View Details</Link>
         </Button>
-        <Button size="sm" variant="outline" className="">
+        <Button size="sm" variant="outline" className="" onClick={() => onEdit(firm)}>
           Edit
         </Button>
         <Button size="sm" variant="destructive" className="">

@@ -9,6 +9,7 @@ import {
   fetchSuccess,
 } from '../features/stockSlice';
 import { selectAuthToken } from '../features/authSlice';
+import { toast } from 'sonner';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const useStockCall = () => {
@@ -50,7 +51,7 @@ const useStockCall = () => {
   const getStockData = async (url) => {
     try {
       dispatch(fetchStart());
-      const { data } = await axios(`${BASE_URL}${url}`, {
+      const { data } = await axios(`${BASE_URL}${url}?sort[createdAt]=desc`, {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -80,7 +81,45 @@ const useStockCall = () => {
     }
   };
 
-  return { getStockData, getStockDataById };
+  const createStockData = async (url, createdInfo)=> {
+     try {
+      // dispatch(fetchStart());
+      await axios.post(`${BASE_URL}${url}`, createdInfo, {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+      await getStockData(url);
+      toast.success('created Successfully');
+      return true;
+    } catch (error) {
+      dispatch(fetchFail(error.message));
+      toast.error('create failed', {description:error.message})
+      return false;
+    }
+  }
+
+  const updateStockData = async (url, id, updatedInfo) => {
+    try {
+      await axios.put(`${BASE_URL}${url}/${id}`, updatedInfo, {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+      toast.success("Updated Successfully!");
+      await getStockData(url)
+      return true;
+    } catch (error) {
+      console.log(error);
+      dispatch(fetchFail(error));
+      toast.error("Update Failed!", { description: error.message });
+      return false;
+    }
+  };
+
+
+
+  return { getStockData, getStockDataById, createStockData, updateStockData };
 };
 
 export default useStockCall;

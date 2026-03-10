@@ -34,7 +34,7 @@ export const stockSlice = createSlice({
     fetchSuccess: (state, { payload: { url, data } }) => {
       console.log(url, data);
       state.loading = false;
-      state[url] = data; //objelere ulasmanin iki yolu vardi burda köseli parantez ile ulastik
+      state[url] = data; //objelere ulasmanin iki yolu vardi burda köseli parantez ile ulastik. Bracket nottaion deniyor buna
     },
 
     //data cekme islemi basarisiz oldugunda loading false yap ve errora gelen hatayi at aslinda rejected yazmisiz

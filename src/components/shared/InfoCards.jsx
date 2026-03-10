@@ -1,3 +1,4 @@
+
 import { Card, CardTitle } from "@/components/ui/card";
 export function ErrorCard({ error }) {
   return (
@@ -7,4 +8,15 @@ export function ErrorCard({ error }) {
       </CardTitle>
     </Card>
   );
+}
+
+
+export function NotFoundCard({ message = "No data found." }) {
+    return (
+        <Card>
+            <CardTitle className="p-5 text-center text-lg">
+                {message}
+            </CardTitle>
+        </Card>
+    )
 }

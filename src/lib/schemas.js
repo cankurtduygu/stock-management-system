@@ -32,3 +32,20 @@ export const signUpSchema = z.object({
     message: "Passwords don't match",
     path: ["confirmPassword"],
 });
+
+  export const firmSchema = z.object({
+  name: z.string()
+    .trim()
+    .min(2, "Firm name must be at least 2 characters")
+    .max(100, "Firm name must be less than 100 characters"),
+  phone: z.string()
+    .trim()
+    .min(8, "Phone must be at least 8 characters")
+    .max(25, "Phone must be less than 25 characters")
+    .regex(/^[\d\s()+-]+$/, "Invalid phone format"),
+  address: z.string()
+    .trim()
+    .min(10, "Address must be at least 10 characters")
+    .max(300, "Address must be less than 300 characters"),
+  image: z.url("Invalid image URL")
+});
