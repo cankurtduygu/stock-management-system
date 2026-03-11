@@ -12,7 +12,7 @@ import { useEffect } from 'react';
 import DemoTable from '../components/shared/table/demo-table';
 
 export default function Purchases() {
-    const { getStockData } = useStockCall();
+  const { getStockData } = useStockCall();
 
   const error = useSelector(selectError);
 
@@ -21,9 +21,8 @@ export default function Purchases() {
   const purchases = useSelector(selectPurchases);
 
   useEffect(() => {
-      getStockData("purchases");
-    }, []);
-
+    getStockData('purchases');
+  }, []);
 
   return (
     <section className="space-y-4 pt-3 px-5">
@@ -47,7 +46,7 @@ export default function Purchases() {
                 </p>
               </div>
             </div>
-            <DemoTable data={data} columns={columns}/>
+            <DemoTable data={data} columns={columns} />
           </div>
         </div>
       )}
@@ -55,10 +54,9 @@ export default function Purchases() {
   );
 }
 
+import { MoreHorizontal } from 'lucide-react';
 
-import { MoreHorizontal } from "lucide-react"
- 
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -66,19 +64,20 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu';
 import { ArrowUpDown } from 'lucide-react';
 
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from '@/components/ui/checkbox';
+import DataTableColumnHeader from '../components/shared/table/data-table-column-header';
 //bunlar bizim tablo headerlarımız accessorKey id gibi dusun
 export const columns = [
   {
-    id: "select",
+    id: 'select',
     header: ({ table }) => (
       <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
+          (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -94,44 +93,42 @@ export const columns = [
     enableSorting: false,
     enableHiding: false,
   },
-  
+
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: 'status',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Status" />
+    ),
   },
   {
-    accessorKey: "email",
-   header: ({ column }) => {
+    accessorKey: 'email',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Email" />
+    ),
+  },
+  {
+    accessorKey: 'amount',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Amount" />
+    ),
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue('amount'));
+      const formatted = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      }).format(amount);
+
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
+        <div className="font-medium text-red-600">{formatted}</div>
+      );
     },
   },
+
   {
-    accessorKey: "amount",
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
+    id: 'actions',
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"))
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount)
- 
-      return <div className="text-right font-medium text-red-600">{formatted}</div>
-    },
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const payment = row.original
- 
+      const payment = row.original;
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -152,108 +149,107 @@ export const columns = [
             <DropdownMenuItem>View payment details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-]
+];
 
 export const data = [
   {
-    id: "728ed52f",
+    id: '728ed52f',
     amount: 100,
-    status: "pending",
-    email: "m@example.com",
+    status: 'pending',
+    email: 'm@example.com',
   },
   {
-    id: "489e1d42",
+    id: '489e1d42',
     amount: 125,
-    status: "processing",
-    email: "example@gmail.com",
+    status: 'processing',
+    email: 'example@gmail.com',
   },
 
   {
-    id: "728ed52f",
+    id: '728ed52f',
     amount: 100,
-    status: "pending",
-    email: "m@example.com",
+    status: 'pending',
+    email: 'm@example.com',
   },
   {
-    id: "489e1d42",
+    id: '489e1d42',
     amount: 125,
-    status: "processing",
-    email: "example@gmail.com",
+    status: 'processing',
+    email: 'example@gmail.com',
   },
   {
-    id: "728ed52f",
+    id: '728ed52f',
     amount: 100,
-    status: "pending",
-    email: "m@example.com",
+    status: 'pending',
+    email: 'm@example.com',
   },
   {
-    id: "489e1d42",
+    id: '489e1d42',
     amount: 125,
-    status: "processing",
-    email: "example@gmail.com",
+    status: 'processing',
+    email: 'example@gmail.com',
   },
   {
-    id: "728ed52f",
+    id: '728ed52f',
     amount: 100,
-    status: "pending",
-    email: "m@example.com",
+    status: 'pending',
+    email: 'm@example.com',
   },
   {
-    id: "489e1d42",
+    id: '489e1d42',
     amount: 125,
-    status: "processing",
-    email: "example@gmail.com",
+    status: 'processing',
+    email: 'example@gmail.com',
   },
   {
-    id: "728ed52f",
+    id: '728ed52f',
     amount: 100,
-    status: "pending",
-    email: "m@example.com",
+    status: 'pending',
+    email: 'm@example.com',
   },
   {
-    id: "489e1d42",
+    id: '489e1d42',
     amount: 125,
-    status: "processing",
-    email: "example@gmail.com",
+    status: 'processing',
+    email: 'example@gmail.com',
   },
   {
-    id: "728ed52f",
+    id: '728ed52f',
     amount: 100,
-    status: "pending",
-    email: "m@example.com",
+    status: 'pending',
+    email: 'm@example.com',
   },
   {
-    id: "489e1d42",
+    id: '489e1d42',
     amount: 125,
-    status: "processing",
-    email: "example@gmail.com",
+    status: 'processing',
+    email: 'example@gmail.com',
   },
   {
-    id: "728ed52f",
+    id: '728ed52f',
     amount: 100,
-    status: "pending",
-    email: "m@example.com",
+    status: 'pending',
+    email: 'm@example.com',
   },
   {
-    id: "489e1d42",
+    id: '489e1d42',
     amount: 125,
-    status: "processing",
-    email: "example@gmail.com",
+    status: 'processing',
+    email: 'example@gmail.com',
   },
   {
-    id: "728ed52f",
+    id: '728ed52f',
     amount: 100,
-    status: "pending",
-    email: "m@example.com",
+    status: 'pending',
+    email: 'm@example.com',
   },
   {
-    id: "489e1d42",
+    id: '489e1d42',
     amount: 125,
-    status: "processing",
-    email: "example@gmail.com",
+    status: 'processing',
+    email: 'example@gmail.com',
   },
-
-]
+];
