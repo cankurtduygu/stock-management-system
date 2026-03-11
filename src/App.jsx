@@ -17,6 +17,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import Firms from './pages/Firms';
 import Brands from './pages/Brands';
 import FirmDetail from './pages/FirmDetail';
+import Purchases from './pages/Purchases';
 
 
 const router = createBrowserRouter([
@@ -59,7 +60,7 @@ const router = createBrowserRouter([
           },
           {
             path: 'purchases',
-            element: <div>Purchases Page</div>,
+            element: <Purchases />,
           },
           {
             path: 'sales',
