@@ -5,20 +5,38 @@ import {
   selectLoading,
   selectPurchases,
 } from '../features/stockSlice';
-import { NotFoundCard } from '../components/shared/InfoCards';
+import { ErrorCard, NotFoundCard } from '../components/shared/InfoCards';
 import { PurchaseTableSkeleton } from '../components/shared/Skeletons';
 import useStockCall from '../hooks/useStockCall';
 import { useEffect } from 'react';
-import DemoTable from '../components/shared/table/demo-table';
+import DataTable from '../components/shared/table/data-table';
+
+import { MoreHorizontal } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+import { Checkbox } from '@/components/ui/checkbox';
+import DataTableColumnHeader from '../components/shared/table/data-table-column-header';
+import { format } from 'date-fns';
+// import ErrorCard from '../components/shared/InfoCards/ErrorCard';
+
+
+
 
 export default function Purchases() {
   const { getStockData } = useStockCall();
-
   const error = useSelector(selectError);
-
   const isLoading = useSelector(selectLoading);
-
   const purchases = useSelector(selectPurchases);
+
+  console.log(purchases);
 
   useEffect(() => {
     getStockData('purchases');
@@ -46,7 +64,7 @@ export default function Purchases() {
                 </p>
               </div>
             </div>
-            <DemoTable data={data} columns={columns} />
+            <DataTable data={purchases} columns={columns} />
           </div>
         </div>
       )}
@@ -54,21 +72,6 @@ export default function Purchases() {
   );
 }
 
-import { MoreHorizontal } from 'lucide-react';
-
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { ArrowUpDown } from 'lucide-react';
-
-import { Checkbox } from '@/components/ui/checkbox';
-import DataTableColumnHeader from '../components/shared/table/data-table-column-header';
 //bunlar bizim tablo headerlarımız accessorKey id gibi dusun
 export const columns = [
   {
@@ -95,21 +98,42 @@ export const columns = [
   },
 
   {
-    accessorKey: 'status',
+    // Sorun şu: Sen header (başlık) kısmını değiştirmek isterken, aslında verinin hangi anahtarla eşleşeceğini söyleyen yapıyı bozdun ya da karıştırdın.// Neden Veriler Kayboldu?// TanStack Table'da her sütun iki ana parçadan oluşur:// accessorKey: Veritabanından gelen objenin içindeki ismin birebir aynısı olmalıdır. (Yani DB'de createdAt ise burada da öyle olmalı). // header: Bu sadece "tepede ne yazsın" kısmıdır.
+    accessorKey: 'createdAt',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader
+        column={column}
+        isSorted={column.getIsSorted()}
+        title="Created At"
+      />
+    ),
+    // Ey TanStack! Bana o koca props paketini getirme. Ben biliyorum ki o paketin içinde row isminde bir kutu var. Sen paketi daha kapıda aç, içinden sadece row kutusunu bana ver, paketin geri kalanı (column, table, vb.) sende kalsın.
+    cell: ({ row }) => (
+      <div className="font-medium">
+        {format(new Date(row.getValue("createdAt")), "MMM dd, yyyy")}
+      </div>
     ),
   },
+
   {
-    accessorKey: 'email',
+    accessorKey: 'firm',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Email" />
+      <DataTableColumnHeader
+        column={column}
+        isSorted={column.getIsSorted()}
+        title="Firm"
+      />
     ),
   },
+
   {
     accessorKey: 'amount',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Amount" />
+      <DataTableColumnHeader
+        column={column}
+        isSorted={column.getIsSorted()}
+        title="Amount"
+      />
     ),
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue('amount'));
@@ -118,9 +142,7 @@ export const columns = [
         currency: 'USD',
       }).format(amount);
 
-      return (
-        <div className="font-medium text-red-600">{formatted}</div>
-      );
+      return <div className="font-medium text-red-600">{formatted}</div>;
     },
   },
 

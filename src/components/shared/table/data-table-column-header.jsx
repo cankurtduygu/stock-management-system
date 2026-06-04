@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-export default function DataTableColumnHeader({ column, title, className }) {
+export default function DataTableColumnHeader({ column, title, className, isSorted }) {
   if (!column.getCanSort()) {
     return <div className={cn(className)}>{title}</div>;
   }
@@ -24,9 +24,9 @@ export default function DataTableColumnHeader({ column, title, className }) {
             className="-ml-3 h-8 data-[state=open]:bg-accent"
           >
             <span>{title}</span>
-            {column.getIsSorted() === 'desc' ? (
+            {isSorted=== 'desc' ? (
               <ArrowDown />
-            ) : column.getIsSorted() === 'asc' ? (
+            ) : isSorted === 'asc' ? (
               <ArrowUp />
             ) : (
               <ChevronsUpDown />

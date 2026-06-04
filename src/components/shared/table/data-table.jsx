@@ -24,6 +24,19 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { ChevronsLeft } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import { ChevronsRight } from 'lucide-react';
+
 export default function DemoTable({ data, columns }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -95,7 +108,6 @@ export default function DemoTable({ data, columns }) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
       {/* //!Bu kod, tablonun görsel iskeletini (UI) oluşturduğumuz yerdir.TanStack Table'dan gelen mantıksal verileri, Shadcn UI bileşenleriyle (Table, TableRow, TableHead) ekrana basıyoruz. */}
       <div className="overflow-hidden rounded-md border">
         <Table>
@@ -151,28 +163,89 @@ export default function DemoTable({ data, columns }) {
         </Table>
       </div>
 
-      <div className="flex justify-between items-center">
+
+      {/* //!Pagination islemleri icin */}
+      <div className="flex items-center justify-between px-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
+        <div className="flex items-center space-x-6 lg:space-x-8">
+          <div className="flex items-center space-x-2">
+            <p className="text-sm font-medium">Rows per page</p>
+
+            {/* //Bu kısım, kullanıcının "Bir sayfada 10 mu yoksa 50 mi satır görmek istiyorsun?" sorusuna yanıt verir. */}
+            <Select
+            // value: O anki sayfa boyutunu table.getState() üzerinden çeker.
+              value={`${table.getState().pagination.pageSize}`}
+              // onValueChange: Kullanıcı yeni bir sayı seçtiğinde table.setPageSize ile tabloyu günceller.
+              onValueChange={(value) => {
+                table.setPageSize(Number(value));
+              }}
+            >
+              <SelectTrigger className="h-8 w-17.5">
+                <SelectValue
+                  placeholder={table.getState().pagination.pageSize}
+                />
+              </SelectTrigger>
+              <SelectContent side="top">
+                {[10, 20, 25, 30, 40, 50].map((pageSize) => (
+                  <SelectItem key={pageSize} value={`${pageSize}`}>
+                    {pageSize}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex w-25 items-center justify-center text-sm font-medium">
+          {/* pageIndex + 1: Bilgisayarlar saymaya 0'dan başlar. Kullanıcıya "0. Sayfa" dememek için sonuna +1 ekliyoruz. */}
+            Page {table.getState().pagination.pageIndex + 1} of{' '}
+            {/* getPageCount(): Toplamda kaç sayfa olduğunu hesaplayıp getirir. */}
+            {table.getPageCount()}
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="hidden size-8 lg:flex"
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <span className="sr-only">Go to first page</span>
+              <ChevronsLeft />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-8"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <span className="sr-only">Go to previous page</span>
+              <ChevronLeft />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-8"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <span className="sr-only">Go to next page</span>
+              <ChevronRight />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="hidden size-8 lg:flex"
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              disabled={!table.getCanNextPage()}
+            >
+            {/* sr-only: Sadece ekran okuyucular içindir, sen görmezsin. */}
+              <span className="sr-only">Go to last page</span>
+              <ChevronsRight />
+            </Button>
+          </div>
         </div>
       </div>
     </div>
