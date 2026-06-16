@@ -16,7 +16,6 @@ import { signInSchema } from '../lib/schemas';
 import { Link } from 'react-router-dom';
 import useAuthCall from '../hooks/useAuthCall';
 
-
 export default function SignInForm({ className, ...props }) {
   const { signIn } = useAuthCall(); // useAuthCall custom hook'umuzu kullanarak signIn fonksiyonunu aliyoruz. Boylece onSubmit fonksiyonumuzun icinde signIn fonksiyonunu kullanarak login islemini yapabilecegiz.
 
@@ -48,17 +47,8 @@ export default function SignInForm({ className, ...props }) {
                   Login to your Acme Inc account
                 </p>
               </div>
-              {/* <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                />
-              </Field> */}
-
               <Controller
+                //name kismi zodResolver ile tanimlanan kisim ile uyusmali
                 name="email"
                 control={form.control}
                 render={({ field, fieldState }) => (

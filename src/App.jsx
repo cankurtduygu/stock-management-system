@@ -19,7 +19,6 @@ import Brands from './pages/Brands';
 import FirmDetail from './pages/FirmDetail';
 import Purchases from './pages/Purchases';
 
-
 const router = createBrowserRouter([
   { path: '/', element: <Home />, errorElement: <Error /> },
   {
@@ -50,7 +49,7 @@ const router = createBrowserRouter([
             path: 'firms',
             element: <Firms />,
           },
-           {
+          {
             path: 'firms/:id',
             element: <FirmDetail />,
           },
@@ -77,7 +76,7 @@ function App() {
     <>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
-        {/* PersistGate, uygulamanın state'ini tarayıcıda saklamak ve yeniden yüklemek için kullanılır. Bu sayede kullanıcı sayfayı yenilediğinde veya uygulamayı kapatıp açtığında state korunur. */}
+          {/* PersistGate, uygulamanın state'ini tarayıcıda saklamak ve yeniden yüklemek için kullanılır. Bu sayede kullanıcı sayfayı yenilediğinde veya uygulamayı kapatıp açtığında state korunur. */}
           <ThemeSync />
           <RouterProvider router={router} />
           <Toaster richColors position="top-right" />{' '}
@@ -101,13 +100,12 @@ function ProtectedRoute() {
   // console.log(user);
   // const currentUser = true;
 
-  const currentUser = useSelector(selectCurrentUser); // Replace with actual authentication logic
+  const currentUser = useSelector(selectCurrentUser);
 
   return currentUser ? <Outlet /> : <Navigate to="/sign-in" />;
 }
 
 function ThemeSync() {
-
   //Bu component, uygulamanın tema durumunu yönetmek ve senkronize etmek için kullanılır. useTheme hook'u ile temayı alır ve günceller. Şu anda herhangi bir görsel çıktı üretmez, sadece temayı yönetir. İleride tema değiştirme özellikleri eklenebilir veya uygulamanın farklı bölümlerinde temaya erişim sağlanabilir.
   useTheme();
   return null;

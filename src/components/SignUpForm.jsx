@@ -18,7 +18,7 @@ import useAuthCall from '../hooks/useAuthCall';
 
 export function SignUpForm({ className, ...props }) {
   const { signUp } = useAuthCall();
-  const { isSubmitting } = form.formState;
+  
 
   const form = useForm({
     resolver: zodResolver(signUpSchema),
@@ -30,6 +30,8 @@ export function SignUpForm({ className, ...props }) {
       lastName: '',
     },
   });
+
+  const { isSubmitting } = form.formState;
 
   async function onSubmit(userCredentials) {
     await signUp(userCredentials);
