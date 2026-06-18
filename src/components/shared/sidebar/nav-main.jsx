@@ -1,5 +1,4 @@
 import { ChevronRight } from 'lucide-react';
-
 import {
   Collapsible,
   CollapsibleContent,
@@ -15,7 +14,6 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
-
 import {
   BadgeDollarSign,
   Warehouse,

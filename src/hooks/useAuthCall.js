@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
+
 const useAuthCall = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -68,9 +69,9 @@ const useAuthCall = () => {
         },
       });
       dispatch(cleanAuth());
-      navigate('/');
+      navigate('/', { replace: true });
     } catch (error) {
-      toast.error('Login Faild', {
+      toast.error('Logout Failed', {
         description:
           error.response?.data?.message ||
           error?.message ||

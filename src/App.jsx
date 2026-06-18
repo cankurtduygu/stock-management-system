@@ -93,7 +93,8 @@ function PublicOnlyRoute() {
   //currentUser varsa login olduktan sonra sign-in sayfasina gelmesini istemeyiz. Bu nedenle currentUser varsa stock sayfasina yönlendirecegiz, yoksa Outlet ile çocuk componentleri render edecegiz.
   const currentUser = useSelector(selectCurrentUser);
 
-  return currentUser ? <Navigate to="/stock" replace /> : <Outlet />;
+  return currentUser ? <Navigate to="/stock"
+   replace /> : <Outlet />;
 }
 
 function ProtectedRoute() {
