@@ -16,7 +16,7 @@ export const stockSlice = createSlice({
   name: "stock",
   initialState,
   reducers: {
-    //data cekme islemi baslatildiginde loading true yap ve erroru null yap aslinda pendging yazmisiz
+    //data cekme islemi baslatildiginde(herhangi bir api istegi attigimizda) loading true yap ve erroru null yap aslinda pending yazmisiz
     fetchStart: (state) => {
       state.loading = true;
       state.error = null;

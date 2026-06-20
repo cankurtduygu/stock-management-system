@@ -61,7 +61,7 @@ const useStockCall = () => {
       dispatch(fetchSuccess({ url, data: data.data }));
     } catch (error) {
       dispatch(fetchFail(error.message));
-      console.log(error);
+      // console.log(error);
     }
   };
 
@@ -73,16 +73,16 @@ const useStockCall = () => {
           Authorization: `Token ${token}`,
         },
       });
-      console.log(data.data);
+      // console.log(data.data);
       return { ...data.data };
     } catch (errore) {
       dispatch(fetchFail(error));
-      console.log(error);
+      // console.log(error);
     }
   };
 
-  const createStockData = async (url, createdInfo)=> {
-     try {
+  const createStockData = async (url, createdInfo) => {
+    try {
       // dispatch(fetchStart());
       await axios.post(`${BASE_URL}${url}`, createdInfo, {
         headers: {
@@ -94,10 +94,10 @@ const useStockCall = () => {
       return true;
     } catch (error) {
       dispatch(fetchFail(error.message));
-      toast.error('create failed', {description:error.message})
+      toast.error('create failed', { description: error.message });
       return false;
     }
-  }
+  };
 
   const updateStockData = async (url, id, updatedInfo) => {
     try {
@@ -106,18 +106,16 @@ const useStockCall = () => {
           Authorization: `Token ${token}`,
         },
       });
-      toast.success("Updated Successfully!");
-      await getStockData(url)
+      toast.success('Updated Successfully!');
+      await getStockData(url);
       return true;
     } catch (error) {
       console.log(error);
       dispatch(fetchFail(error));
-      toast.error("Update Failed!", { description: error.message });
+      toast.error('Update Failed!', { description: error.message });
       return false;
     }
   };
-
-
 
   return { getStockData, getStockDataById, createStockData, updateStockData };
 };
