@@ -9,7 +9,6 @@ export function ErrorCard({ error }) {
   );
 }
 
-
 export function NotFoundCard({ message = "No data found." }) {
     return (
         <Card>

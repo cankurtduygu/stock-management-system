@@ -10,7 +10,7 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     fillAuth: (state, { payload }) => {
-      console.log(payload);
+      // console.log(payload);
       if (payload.user) {
         const { email, username, isAdmin, firstName, lastName } = payload.user;
         state.currentUser = { email, username, isAdmin, firstName, lastName };

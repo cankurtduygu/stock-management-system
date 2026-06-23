@@ -94,7 +94,7 @@ const useStockCall = () => {
       return true;
     } catch (error) {
       dispatch(fetchFail(error.message));
-      toast.error('create failed', { description: error.message });
+      toast.error('Create failed', { description: error.message });
       return false;
     }
   };
