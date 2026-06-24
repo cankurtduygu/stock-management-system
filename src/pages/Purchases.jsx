@@ -23,14 +23,48 @@ import DataTableColumnHeader from '../components/shared/table/data-table-column-
 import { format } from 'date-fns';
 import { Edit, Delete, MoreHorizontal } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { PurchaseModal } from '../components/PurchaseModal';
+import { useState } from 'react';
+import { getPurchaseColumns } from "../lib/Table-columns";
+import { AlertDial } from '../components/shared/AlertDial';
 
 export default function Purchases() {
-  const { getStockData } = useStockCall();
+  const { getStockData, deleteStockData } = useStockCall();
   const error = useSelector(selectError);
   const isLoading = useSelector(selectLoading);
   const purchases = useSelector(selectPurchases);
 
-  console.log(purchases);
+  // console.log(purchases);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedPurchase, setSelectedPurchase] = useState(null);
+  // console.log(selectedPurchase);
+
+  function handleModalChange(isOpen) {
+    setModalOpen(isOpen);
+    setSelectedPurchase(null);
+  }
+
+  function handleOpenEdit(purchase) {
+    setSelectedPurchase({
+      ...purchase,
+      firmId: purchase?.firmId?._id,
+      brandId: purchase?.brandId?._id,
+      productId: purchase?.productId?._id,
+      quantity: purchase?.quantity?.toString(),
+      price: purchase?.price?.toString(),
+    });
+    setModalOpen(true);
+  }
+
+  async function handleDelete(purchaseId) {
+    await deleteStockData("purchases", purchaseId);
+  }
+
+  const columns = getPurchaseColumns({
+    onEdit: handleOpenEdit,
+    onDelete: handleDelete,
+  });
 
   useEffect(() => {
     getStockData('purchases');
@@ -61,6 +95,7 @@ export default function Purchases() {
             <DataTable
               data={purchases}
               columns={columns}
+              onAddNew={() => handleModalChange(true)}
               searchPlaceholder='Search firm, brand, product and quantity..'
               searchableFields={[
                 "firmId.name",
@@ -73,7 +108,13 @@ export default function Purchases() {
             />
           </div>
         </div>
+        
       )}
+      <PurchaseModal
+        open={modalOpen}
+        onOpenChange={handleModalChange}
+        selectedPurchase={selectedPurchase}
+      />
     </section>
   );
 }
@@ -207,15 +248,17 @@ export const columns = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleOpenEdit}>
               Edit
               <Edit className="ml-auto" />
             </DropdownMenuItem>
 
-            <DropdownMenuItem variant="destructive">
+            <AlertDial>
+            <DropdownMenuItem variant="destructive" onSelect={(e)=> e.preventDefault()}>
               Delete
               <Delete className="text-destructive ml-auto" />
             </DropdownMenuItem>
+            </AlertDial>
 
             <DropdownMenuLabel>Links</DropdownMenuLabel>
             <DropdownMenuSeparator />

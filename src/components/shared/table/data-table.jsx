@@ -37,7 +37,7 @@ import { ChevronLeft } from 'lucide-react';
 import { ChevronRight } from 'lucide-react';
 import { ChevronsRight } from 'lucide-react';
 
-export default function DemoTable({ data, columns,searchableFields = [], searchPlaceholder = 'Search...'  }) {
+export default function DemoTable({ data, columns, searchableFields = [], searchPlaceholder = 'Search...', onAddNew,  }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -127,6 +127,9 @@ export default function DemoTable({ data, columns,searchableFields = [], searchP
               })}
           </DropdownMenuContent>
         </DropdownMenu>
+        <Button size="sm" className="ml-2" onClick={onAddNew}>
+          Add new
+        </Button>
       </div>
       {/* //!Bu kod, tablonun görsel iskeletini (UI) oluşturduğumuz yerdir.TanStack Table'dan gelen mantıksal verileri, Shadcn UI bileşenleriyle (Table, TableRow, TableHead) ekrana basıyoruz. */}
       <div className="overflow-hidden rounded-md border">

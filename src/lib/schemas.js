@@ -57,3 +57,25 @@ export const brandSchema = z.object({
     .max(100, "Brand name must be less than 100 characters"),
   image: z.url("Invalid image URL")
 });
+
+export const purchaseSchema = z.object({
+  firmId: z.string().min(1, "Firm is required"),
+  brandId: z.string().min(1, "Brand is required"),
+  productId: z.string().min(1, "Product is required"),
+  quantity: z.string().min(1, "Quantity must be at least 1"),
+  price: z.string().min(1, "Price must be at least 0"),
+});
+
+export const saleSchema = z.object({
+  brandId: z.string().min(1, "Brand is required"),
+  productId: z.string().min(1, "Product is required"),
+  quantity: z.string().min(1, "Quantity must be at least 1"),
+  price: z.string().min(1, "Price must be at least 0"),
+});
+
+export const productSchema = z.object({
+  categoryId: z.string().min(1, "Category is required"),
+  brandId: z.string().min(1, "Brand is required"),
+  quantity: z.string().min(0, "Quantity must be at least 0"),
+  name: z.string().min(1, "Name is required"),
+});

@@ -1,123 +1,151 @@
-import axios from 'axios';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
-import {
-  // brandSuccess,
-  // firmSuccess,
-  fetchFail,
-  fetchStart,
-  fetchSuccess,
-} from '../features/stockSlice';
-import { selectAuthToken } from '../features/authSlice';
-import { toast } from 'sonner';
+import { useDispatch } from "react-redux";
+import { fetchFail, fetchStart, fetchSuccess } from "../features/stockSlice";
+import { toast } from "sonner";
+import useAxios from "./useAxios";
 
-const BASE_URL = import.meta.env.VITE_BASE_URL;
 const useStockCall = () => {
   const dispatch = useDispatch();
-  const token = useSelector(selectAuthToken);
+  const { axiosWithToken } = useAxios();
 
-  //   const getFirms = async () => {
-  //     try {
-  //       dispatch(fetchStart());
-  //       const { data } = await axios(`${BASE_URL}firms`, {
-  //         headers: {
-  //           Authorization: `Token ${token}`,
-  //         },
-  //       });
-  //       console.log(data.data);
-  //       dispatch(firmSuccess(data.data));
-  //     } catch (error) {
-  //       dispatch(fetchFail(error));
-  //       console.log(error);
-  //     }
-  //   };
-
-  //   const getBrands = async () => {
-  //     try {
-  //       dispatch(fetchStart());
-  //       const { data } = await axios(`${BASE_URL}brands`, {
-  //         headers: {
-  //           Authorization: `Token ${token}`,
-  //         },
-  //       });
-  //       console.log(data.data);
-  //       dispatch(brandSuccess(data.data));
-  //     } catch (error) {
-  //       dispatch(fetchFail(error));
-  //       console.log(error);
-  //     }
-  //   };
+  const getErrorMessage = (error) => {
+    return (
+      error?.response?.data?.message ||
+      error?.response?.data?.detail ||
+      error?.message ||
+      "Something went wrong"
+    );
+  };
 
   const getStockData = async (url) => {
     try {
       dispatch(fetchStart());
-      const { data } = await axios(`${BASE_URL}${url}?sort[createdAt]=desc`, {
-        headers: {
-          Authorization: `Token ${token}`,
-        },
-      });
+      const { data } = await axiosWithToken(`${url}?sort[createdAt]=desc`);
       //   console.log(data.data);
       // throw new Error('test error handling')
       dispatch(fetchSuccess({ url, data: data.data }));
     } catch (error) {
-      dispatch(fetchFail(error.message));
-      // console.log(error);
+      const errMsg = getErrorMessage(error);
+      dispatch(fetchFail(errMsg));
+      console.log(error);
+      toast.error("Data could not be loaded", { description: errMsg });
+    }
+  };
+
+  // const getProFirBrand = async () => {
+  //   try {
+  //     await Promise.all([
+  //       getStockData("products"),
+  //       getStockData("firms"),
+  //       getStockData("brands"),
+  //     ]);
+  //   } catch (error) {
+  //     const errMsg = getErrorMessage(error);
+  //     dispatch(fetchFail(errMsg));
+  //     console.log(error);
+  //     toast.error("Data could not be loaded", { description: errMsg });
+  //   }
+  // };
+
+  // const getProBrand = async () => {
+  //   try {
+  //     await Promise.all([getStockData("products"), getStockData("brands")]);
+  //   } catch (error) {
+  //     const errMsg = getErrorMessage(error);
+  //     dispatch(fetchFail(errMsg));
+  //     console.log(error);
+  //     toast.error("Data could not be loaded", { description: errMsg });
+  //   }
+  // };
+
+  // const getCatBrand = async () => {
+  //   try {
+  //     await Promise.all([getStockData("categories"), getStockData("brands")]);
+  //   } catch (error) {
+  //     const errMsg = getErrorMessage(error);
+  //     dispatch(fetchFail(errMsg));
+  //     console.log(error);
+  //     toast.error("Data could not be loaded", { description: errMsg });
+  //   }
+  // };
+
+  const getStockResources = async (resources) => {
+    try {
+      await Promise.all(resources.map((resource) => getStockData(resource)));
+    } catch (error) {
+      const errMsg = getErrorMessage(error);
+      dispatch(fetchFail(errMsg));
+      console.log(error);
+      toast.error("Data could not be loaded", { description: errMsg });
     }
   };
 
   const getStockDataById = async (url, id) => {
     try {
       dispatch(fetchStart());
-      const { data } = await axios(`${BASE_URL}${url}/${id}`, {
-        headers: {
-          Authorization: `Token ${token}`,
-        },
-      });
-      // console.log(data.data);
+      const { data } = await axiosWithToken(`${url}/${id}`);
+      console.log(data.data);
       return { ...data.data };
-    } catch (errore) {
-      dispatch(fetchFail(error));
-      // console.log(error);
+    } catch (error) {
+      const errMsg = getErrorMessage(error);
+      dispatch(fetchFail(errMsg));
+      console.log(error);
     }
   };
 
   const createStockData = async (url, createdInfo) => {
     try {
-      // dispatch(fetchStart());
-      await axios.post(`${BASE_URL}${url}`, createdInfo, {
-        headers: {
-          Authorization: `Token ${token}`,
-        },
-      });
+      await axiosWithToken.post(`${url}`, createdInfo);
+      toast.success("Created Successfully!");
       await getStockData(url);
-      toast.success('created Successfully');
       return true;
     } catch (error) {
-      dispatch(fetchFail(error.message));
-      toast.error('Create failed', { description: error.message });
+      const errMsg = getErrorMessage(error);
+      dispatch(fetchFail(errMsg));
+      console.log(error);
+      toast.error("Create Failed!", { description: errMsg });
       return false;
     }
   };
 
   const updateStockData = async (url, id, updatedInfo) => {
     try {
-      await axios.put(`${BASE_URL}${url}/${id}`, updatedInfo, {
-        headers: {
-          Authorization: `Token ${token}`,
-        },
-      });
-      toast.success('Updated Successfully!');
+      await axiosWithToken.put(`${url}/${id}`, updatedInfo);
+      toast.success("Updated Successfully!");
       await getStockData(url);
       return true;
     } catch (error) {
+      const errMsg = getErrorMessage(error);
+      dispatch(fetchFail(errMsg));
       console.log(error);
-      dispatch(fetchFail(error));
-      toast.error('Update Failed!', { description: error.message });
+      toast.error("Update Failed!", { description: errMsg });
       return false;
     }
   };
 
-  return { getStockData, getStockDataById, createStockData, updateStockData };
+  const deleteStockData = async (url, id) => {
+    try {
+      await axiosWithToken.delete(`${url}/${id}`);
+      toast.success("Deleted Successfully!");
+      await getStockData(url);
+    } catch (error) {
+      console.log(error);
+      const errMsg = getErrorMessage(error);
+      dispatch(fetchFail(errMsg));
+      toast.error("Delete Failed!", { description: errMsg });
+    }
+  };
+
+  return {
+    getStockData,
+    getStockDataById,
+    createStockData,
+    updateStockData,
+    deleteStockData,
+    getStockResources,
+    // getProFirBrand,
+    // getProBrand,
+    // getCatBrand,
+  };
 };
 
 export default useStockCall;
