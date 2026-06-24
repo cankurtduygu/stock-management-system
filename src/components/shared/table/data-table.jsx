@@ -37,11 +37,17 @@ import { ChevronLeft } from 'lucide-react';
 import { ChevronRight } from 'lucide-react';
 import { ChevronsRight } from 'lucide-react';
 
-export default function DemoTable({ data, columns }) {
+export default function DemoTable({ data, columns,searchableFields = [], searchPlaceholder = 'Search...'  }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
+  const [globalFilter, setGlobalFilter] = useState();
+
+  const getByPath = (obj, path) =>
+    path
+      .split(".")
+      .reduce((acc, key) => (acc == null ? undefined : acc[key]), obj);
 
   //rhf larda yaptigimiz gibi bir custom hook verildi bize useReactTable dan gelmis oluyor ve ona data ve columns veriyoruz ve o bize tabloyu olusturmak icin gerekli fonksiyonlari veriyor getCoreRowModel gibi getPaginationRowModel gibi getSortedRowModel gibi getFilteredRowModel gibi fonksiyonlar veriyor bize onlari kullanarak tabloyu olusturuyoruz
 
@@ -59,6 +65,21 @@ export default function DemoTable({ data, columns }) {
     getFilteredRowModel: getFilteredRowModel(), //getFilteredRowModel: Filtreleme mantığını çalıştırır.
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: (row, _columnId, filterValue) => {
+      const q = String(filterValue ?? "")
+        .toLowerCase()
+        .trim();
+      if (!q) return true;
+
+      return searchableFields.some((field) => {
+        const value = getByPath(row.original, field);
+        // console.log(value);
+        return String(value ?? "")
+          .toLowerCase()
+          .includes(q);
+      });
+    },
 
     //?State: Tablo motorunun mevcut durumunu (state) tutar ve yönetir.
     //Normalde useReactTable kendi içinde bazı durumları tutar. Ancak biz dışarıda useState ile bu durumları (sorting, columnFilters vb.) tanımladığımızda, tabloya şunu demiş oluruz: "Kendi kafana göre değil, benim sana verdiğim bu değişkenlere bakarak çalış."
@@ -67,6 +88,7 @@ export default function DemoTable({ data, columns }) {
       columnFilters,
       columnVisibility,
       rowSelection,
+      globalFilter,
     },
   });
 
@@ -74,11 +96,9 @@ export default function DemoTable({ data, columns }) {
     <div>
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
-          value={table.getColumn('email')?.getFilterValue() ?? ''}
-          onChange={(event) =>
-            table.getColumn('email')?.setFilterValue(event.target.value)
-          }
+          placeholder={searchPlaceholder}
+          value={globalFilter}
+          onChange={(event) => table.setGlobalFilter(event.target.value)}
           className="max-w-sm"
         />
         <DropdownMenu>

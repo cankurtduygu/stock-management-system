@@ -18,6 +18,7 @@ import Firms from './pages/Firms';
 import Brands from './pages/Brands';
 import FirmDetail from './pages/FirmDetail';
 import Purchases from './pages/Purchases';
+import Sales from './pages/Sales';
 
 const router = createBrowserRouter([
   { path: '/', element: <Home />, errorElement: <Error /> },
@@ -62,8 +63,12 @@ const router = createBrowserRouter([
             element: <Purchases />,
           },
           {
+            path: "purchases/:id",
+            element: <div>purchases details page under construction..</div>,
+          },
+          {
             path: 'sales',
-            element: <div>Sales Page</div>,
+            element: <Sales />,
           },
         ],
       },

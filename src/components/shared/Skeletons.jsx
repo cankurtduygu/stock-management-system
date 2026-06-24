@@ -1,6 +1,5 @@
 import { Card, CardFooter, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-
 export function FirmCardSkeleton() {
   return (
     <Card className="relative mx-auto flex h-full w-full max-w-sm flex-col overflow-hidden pt-0 shadow-lg">
@@ -27,7 +26,7 @@ export function FirmCardSkeleton() {
   );
 }
 
-export function FirmCardsSkeleton( { count }) {
+export function FirmCardsSkeleton({ count = 8 }) {
   return (
     <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {Array.from({ length: count }).map((_, idx) => (
@@ -38,12 +37,39 @@ export function FirmCardsSkeleton( { count }) {
 }
 
 
-export function PurchaseTableSkeleton() {
+export function BrandCardSkeleton() {
   return (
-    <div className="space-y-3">
-      {Array.from({ length: 5 }).map((_, idx) => (
-        <Skeleton key={idx} className="h-10 rounded" />
+    <Card className="relative mx-auto flex h-full w-full max-w-sm flex-col overflow-hidden shadow-lg">
+      <CardHeader className="flex justify-center">
+          <Skeleton className="h-6 w-36" />
+      </CardHeader>
+
+      <Skeleton className="aspect-video w-full rounded-none" />
+
+      <CardFooter className="mt-auto flex gap-2">
+        <Skeleton className="h-9 w-16" />
+        <Skeleton className="h-9 w-20" />
+      </CardFooter>
+    </Card>
+  );
+}
+
+export function BrandCardsSkeleton({ count = 8 }) {
+  return (
+    <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      {Array.from({ length: count }).map((_, idx) => (
+        <BrandCardSkeleton key={idx} />
       ))}
     </div>
-  )
+  );
+}
+
+export function PurchaseTableSkeleton() {
+	return (
+		<div className="space-y-3">
+			{Array.from({ length: 5 }).map((_, idx) => (
+				<Skeleton key={idx} className="h-10 rounded" />
+			))}
+		</div>
+	)
 }

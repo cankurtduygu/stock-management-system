@@ -1,17 +1,14 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
 import {
   selectError,
   selectLoading,
   selectPurchases,
 } from '../features/stockSlice';
-import { ErrorCard, NotFoundCard } from '../components/shared/InfoCards';
+import { NotFoundCard, ErrorCard } from '../components/shared/InfoCards';
 import { PurchaseTableSkeleton } from '../components/shared/Skeletons';
 import useStockCall from '../hooks/useStockCall';
 import { useEffect } from 'react';
 import DataTable from '../components/shared/table/data-table';
-
-import { MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -21,14 +18,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-
 import { Checkbox } from '@/components/ui/checkbox';
 import DataTableColumnHeader from '../components/shared/table/data-table-column-header';
 import { format } from 'date-fns';
-// import ErrorCard from '../components/shared/InfoCards/ErrorCard';
-
-
-
+import { Edit, Delete, MoreHorizontal } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Purchases() {
   const { getStockData } = useStockCall();
@@ -64,7 +58,19 @@ export default function Purchases() {
                 </p>
               </div>
             </div>
-            <DataTable data={purchases} columns={columns} />
+            <DataTable
+              data={purchases}
+              columns={columns}
+              searchPlaceholder='Search firm, brand, product and quantity..'
+              searchableFields={[
+                "firmId.name",
+                "brandId.name",
+                "productId.name",
+                "quantity",
+                "amount",
+                "price",
+              ]}
+            />
           </div>
         </div>
       )}
@@ -110,18 +116,54 @@ export const columns = [
     // Ey TanStack! Bana o koca props paketini getirme. Ben biliyorum ki o paketin içinde row isminde bir kutu var. Sen paketi daha kapıda aç, içinden sadece row kutusunu bana ver, paketin geri kalanı (column, table, vb.) sende kalsın.
     cell: ({ row }) => (
       <div className="font-medium">
-        {format(new Date(row.getValue("createdAt")), "MMM dd, yyyy")}
+        {format(new Date(row.getValue('createdAt')), 'MMM dd, yyyy')}
       </div>
     ),
   },
 
   {
     accessorKey: 'firm',
+    accessorFn: (row) => (row.firmId ? row.firmId.name : 'N/A'),
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
         isSorted={column.getIsSorted()}
         title="Firm"
+      />
+    ),
+  },
+
+  {
+    accessorKey: 'brand',
+    accessorFn: (row) => (row.brandId ? row.brandId.name : 'N/A'),
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        isSorted={column.getIsSorted()}
+        title="Brand"
+      />
+    ),
+  },
+
+  {
+    accessorKey: 'product',
+    accessorFn: (row) => (row.productId ? row.productId.name : 'N/A'),
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        isSorted={column.getIsSorted()}
+        title="Product"
+      />
+    ),
+  },
+
+  {
+    accessorKey: 'quantity',
+    header: ({ column }) => (
+      <DataTableColumnHeader
+        column={column}
+        isSorted={column.getIsSorted()}
+        title="Quantity"
       />
     ),
   },
@@ -149,7 +191,9 @@ export const columns = [
   {
     id: 'actions',
     cell: ({ row }) => {
-      const payment = row.original;
+      const purchase = row.original;
+      const firmId = purchase?.firmId?._id ?? null;
+      console.log(firmId);
 
       return (
         <DropdownMenu>
@@ -161,14 +205,40 @@ export const columns = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem>
+              Edit
+              <Edit className="ml-auto" />
+            </DropdownMenuItem>
+
+            <DropdownMenuItem variant="destructive">
+              Delete
+              <Delete className="text-destructive ml-auto" />
+            </DropdownMenuItem>
+
+            <DropdownMenuLabel>Links</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem>
+              <Link to={`/stock/purchases/${purchase._id}`}>
+                View purchase details
+              </Link>
+            </DropdownMenuItem>
+
+            {firmId ? (
+              <DropdownMenuItem asChild>
+                <Link to={`/stock/firms/${firmId}`}>View Firm</Link>
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem disabled>No firm available</DropdownMenuItem>
+            )}
+
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => navigator.clipboard.writeText(purchase._id)}
             >
               Copy payment ID
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

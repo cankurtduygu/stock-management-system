@@ -49,3 +49,11 @@ export const signUpSchema = z.object({
     .max(300, "Address must be less than 300 characters"),
   image: z.url("Invalid image URL")
 });
+
+export const brandSchema = z.object({
+  name: z.string()
+    .trim()
+    .min(2, "Brand name must be at least 2 characters")
+    .max(100, "Brand name must be less than 100 characters"),
+  image: z.url("Invalid image URL")
+});
