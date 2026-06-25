@@ -2,55 +2,53 @@ import { useSelector } from "react-redux";
 import {
   selectError,
   selectLoading,
-  selectPurchases,
+  selectProducts,
 } from "../features/stockSlice";
 import { ErrorCard, NotFoundCard } from "../components/shared/InfoCards";
 import { TableSkeleton } from "../components/shared/Skeletons";
 import useStockCall from "../hooks/useStockCall";
 import { useEffect } from "react";
 import DataTable from "../components/shared/table/data-table";
-import { PurchaseModal } from "../components/PurchaseModal";
 import { useState } from "react";
-import { getPurchaseColumns } from "../lib/Table-columns";
+import { getProductColumns } from "../lib/Table-columns";
+import { ProductModal } from "../components/ProductModal";
 
-export default function Purchases() {
+export default function Products() {
   const { getStockData, deleteStockData } = useStockCall();
   const error = useSelector(selectError);
   const isLoading = useSelector(selectLoading);
-  const purchases = useSelector(selectPurchases);
+  const products = useSelector(selectProducts);
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedPurchase, setSelectedPurchase] = useState(null);
-  // console.log(selectedPurchase);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   function handleModalChange(isOpen) {
     setModalOpen(isOpen);
-    setSelectedPurchase(null);
+    setSelectedProduct(null);
   }
 
-  function handleOpenEdit(purchase) {
-    setSelectedPurchase({
-      ...purchase,
-      firmId: purchase?.firmId?._id,
-      brandId: purchase?.brandId?._id,
-      productId: purchase?.productId?._id,
-      quantity: purchase?.quantity?.toString(),
-      price: purchase?.price?.toString(),
+  function handleOpenEdit(product) {
+    setSelectedProduct({
+      ...product,
+      brandId: product?.brandId?._id,
+      categoryId: product?.categoryId?._id,
+      quantity: product?.quantity?.toString(),
+      name: product?.name,
     });
     setModalOpen(true);
   }
 
-  async function handleDelete(purchaseId) {
-    await deleteStockData("purchases", purchaseId);
+  async function handleDelete(productId) {
+    await deleteStockData("products", productId);
   }
 
-  const columns = getPurchaseColumns({
+  const columns = getProductColumns({
     onEdit: handleOpenEdit,
     onDelete: handleDelete,
   });
 
   useEffect(() => {
-    getStockData("purchases");
+    getStockData("products");
   }, []);
 
   return (
@@ -60,41 +58,40 @@ export default function Purchases() {
           <div className="flex items-center justify-between gap-2">
             <div className="flex flex-col gap-1">
               <h2 className="text-2xl font-semibold tracking-tight">
-                Purchases
+                Products
               </h2>
               <p className="text-muted-foreground">
-                Track and manage all purchase transactions by firm, brand,
-                product, quantity, and amount.
+                Track and manage all products transactions by brand, product,
+                quantity, price and amount.
               </p>
             </div>
           </div>
           {error && <ErrorCard error={error} />}
+
           {isLoading ? (
             <TableSkeleton />
-          ) : purchases.length === 0 ? (
+          ) : products.length === 0 ? (
             <NotFoundCard />
           ) : (
             <DataTable
-              data={purchases}
+              data={products}
               columns={columns}
               onAddNew={() => handleModalChange(true)}
-              searchPlaceholder="Search firm, brand, product and quantity.."
+              searchPlaceholder="Search product name, brand, category and quantity.."
               searchableFields={[
-                "firmId.name",
                 "brandId.name",
-                "productId.name",
+                "categoryId.name",
                 "quantity",
-                "amount",
-                "price",
+                "name",
               ]}
             />
           )}
         </div>
       </div>
-      <PurchaseModal
+      <ProductModal
         open={modalOpen}
         onOpenChange={handleModalChange}
-        selectedPurchase={selectedPurchase}
+        selectedProduct={selectedProduct}
       />
     </section>
   );

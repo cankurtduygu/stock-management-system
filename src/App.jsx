@@ -19,6 +19,7 @@ import Brands from './pages/Brands';
 import FirmDetail from './pages/FirmDetail';
 import Purchases from './pages/Purchases';
 import Sales from './pages/Sales';
+import Products from './pages/Products';
 
 const router = createBrowserRouter([
   { path: '/', element: <Home />, errorElement: <Error /> },
@@ -56,7 +57,7 @@ const router = createBrowserRouter([
           },
           {
             path: 'products',
-            element: <div>Products Page</div>,
+            element: <Products/>,
           },
           {
             path: 'purchases',
@@ -69,6 +70,10 @@ const router = createBrowserRouter([
           {
             path: 'sales',
             element: <Sales />,
+          },
+          {
+            path: "sales/:id",
+            element: <div>Sale detailed page under construction..</div>,
           },
         ],
       },

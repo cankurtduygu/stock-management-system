@@ -3,7 +3,7 @@ export function ErrorCard({ error }) {
   return (
     <Card className="border-destructive bg-destructive/10">
       <CardTitle className="p-5 text-center text-lg text-destructive">
-        {error?.message || error || "Something went wrong."}
+        { error || "Something went wrong."}
       </CardTitle>
     </Card>
   );

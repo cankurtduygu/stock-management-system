@@ -4,61 +4,77 @@ import {
   selectLoading,
   selectSales,
 } from "../features/stockSlice";
-import { NotFoundCard } from "../components/shared/InfoCards";
-import { PurchaseTableSkeleton } from "../components/shared/Skeletons";
+import { ErrorCard, NotFoundCard } from "../components/shared/InfoCards";
+import { TableSkeleton } from "../components/shared/Skeletons";
 import useStockCall from "../hooks/useStockCall";
 import { useEffect } from "react";
 import DataTable from "../components/shared/table/data-table";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Checkbox } from "@/components/ui/checkbox";
-import DataTableColumnHeader from "../components/shared/table/data-table-column-header";
-import { format } from "date-fns";
-import { Edit, Delete, MoreHorizontal } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { getSaleColumns } from "../lib/Table-columns";
+import { SaleModal } from "../components/SaleModal";
 
 export default function Sales() {
-  const { getStockData } = useStockCall();
+  const { getStockData, deleteStockData } = useStockCall();
   const error = useSelector(selectError);
   const isLoading = useSelector(selectLoading);
   const sales = useSelector(selectSales);
-  // console.log(sales);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedSale, setSelectedSale] = useState(null);
+
+  function handleModalChange(isOpen) {
+    setModalOpen(isOpen);
+    setSelectedSale(null);
+  }
+
+  function handleOpenEdit(sale) {
+    setSelectedSale({
+      ...sale,
+      brandId: sale?.brandId?._id,
+      productId: sale?.productId?._id,
+      quantity: sale?.quantity?.toString(),
+      price: sale?.price?.toString(),
+    });
+    setModalOpen(true);
+  }
+
+  async function handleDelete(saleId) {
+    await deleteStockData("sale", saleId);
+  }
+
+  const columns = getSaleColumns({
+    onEdit: handleOpenEdit,
+    onDelete: handleDelete,
+  });
+
   useEffect(() => {
     getStockData("sales");
   }, []);
 
   return (
     <section className="space-y-4 pt-3 px-5">
-      {error && <ErrorCard error={error} />}
-
-      {isLoading ? (
-        <PurchaseTableSkeleton />
-      ) : sales.length === 0 ? (
-        <NotFoundCard />
-      ) : (
-        <div className="rounded-md border">
-          <div className="flex h-full flex-1 flex-col gap-8 p-8">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex flex-col gap-1">
-                <h2 className="text-2xl font-semibold tracking-tight">
-                  Sales
-                </h2>
-                <p className="text-muted-foreground">
-                  Track and manage all sale transactions by ....
-                </p>
-              </div>
+      <div className="rounded-md border">
+        <div className="flex h-full flex-1 flex-col gap-8 p-8">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-col gap-1">
+              <h2 className="text-2xl font-semibold tracking-tight">Sales</h2>
+              <p className="text-muted-foreground">
+               Track and manage all sales transactions by brand, product, quantity, price and amount.
+              </p>
             </div>
+          </div>
+          {error && <ErrorCard error={error} />}
+
+          {isLoading ? (
+            <TableSkeleton />
+          ) : sales.length === 0 ? (
+            <NotFoundCard />
+          ) : (
             <DataTable
               data={sales}
               columns={columns}
-              searchPlaceholder='Search brand, product and quantity..'
+              onAddNew={() => handleModalChange(true)}
+              searchPlaceholder="Search brand, product, price and quantity.."
               searchableFields={[
                 "brandId.name",
                 "productId.name",
@@ -67,175 +83,14 @@ export default function Sales() {
                 "price",
               ]}
             />
-          </div>
+          )}
         </div>
-      )}
+      </div>
+      <SaleModal
+        open={modalOpen}
+        onOpenChange={handleModalChange}
+        selectedSale={selectedSale}
+      />
     </section>
   );
 }
-
-const columns = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "createdAt",
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        isSorted={column.getIsSorted()}
-        title="Created At"
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="font-medium">
-        {format(new Date(row.getValue("createdAt")), "MMM dd, yyyy")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "brand",
-    accessorFn: (row) => (row.brandId ? row.brandId.name : "N/A"),
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        isSorted={column.getIsSorted()}
-        title="Brand"
-      />
-    ),
-  },
-  {
-    accessorKey: "product",
-    accessorFn: (row) => (row.productId ? row.productId.name : "N/A"),
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        isSorted={column.getIsSorted()}
-        title="Product"
-      />
-    ),
-  },
-  {
-    accessorKey: "quantity",
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        isSorted={column.getIsSorted()}
-        title="Quantity"
-      />
-    ),
-  },
-  {
-    accessorKey: "price",
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        isSorted={column.getIsSorted()}
-        title="Price"
-      />
-    ),
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("price"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className="">{formatted}</div>;
-    },
-  },
-  {
-    accessorKey: "amount",
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        isSorted={column.getIsSorted()}
-        title="Amount"
-      />
-    ),
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className=" font-medium">{formatted}</div>;
-    },
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const sale = row.original;
-      const firmId = sale?.firmId?._id ?? null;
-      // console.log(firmId);
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem>
-              Edit
-              <Edit className="ml-auto" />
-            </DropdownMenuItem>
-
-            <DropdownMenuItem variant="destructive">
-              Delete
-              <Delete className="text-destructive ml-auto" />
-            </DropdownMenuItem>
-
-            <DropdownMenuLabel>Links</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem>
-              <Link to={`/stock/sales/${sale._id}`}>
-                View sale details
-              </Link>
-            </DropdownMenuItem>
-
-            {firmId ? (
-              <DropdownMenuItem>
-                <Link to={`/stock/firms/${firmId}`}>View Firm</Link>
-              </DropdownMenuItem>
-            ) : (
-              <DropdownMenuItem disabled>No firm available</DropdownMenuItem>
-            )}
-
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(sale._id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
