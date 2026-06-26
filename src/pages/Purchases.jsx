@@ -1,13 +1,13 @@
 import { useSelector } from "react-redux";
 import {
   selectError,
-  selectLoading,
   selectPurchases,
+  selectPurchasesStatus,
 } from "../features/stockSlice";
 import { ErrorCard, NotFoundCard } from "../components/shared/InfoCards";
 import { TableSkeleton } from "../components/shared/Skeletons";
 import useStockCall from "../hooks/useStockCall";
-import { useEffect } from "react";
+import { useEffectEvent, useEffect } from "react";
 import DataTable from "../components/shared/table/data-table";
 import { PurchaseModal } from "../components/PurchaseModal";
 import { useState } from "react";
@@ -16,7 +16,7 @@ import { getPurchaseColumns } from "../lib/Table-columns";
 export default function Purchases() {
   const { getStockData, deleteStockData } = useStockCall();
   const error = useSelector(selectError);
-  const isLoading = useSelector(selectLoading);
+  const purchasesStatus = useSelector(selectPurchasesStatus);
   const purchases = useSelector(selectPurchases);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -49,9 +49,17 @@ export default function Purchases() {
     onDelete: handleDelete,
   });
 
-  useEffect(() => {
+  const getData = useEffectEvent(() => {
     getStockData("purchases");
+  });
+
+  useEffect(() => {
+    getData();
   }, []);
+
+  const showLoadingSkeleton =
+    purchasesStatus === "idle" ||
+    (purchasesStatus === "loading" && purchases.length === 0);
 
   return (
     <section className="space-y-4 pt-3 px-5">
@@ -69,7 +77,7 @@ export default function Purchases() {
             </div>
           </div>
           {error && <ErrorCard error={error} />}
-          {isLoading ? (
+          {showLoadingSkeleton ? (
             <TableSkeleton />
           ) : purchases.length === 0 ? (
             <NotFoundCard />

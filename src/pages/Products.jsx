@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux";
 import {
   selectError,
-  selectLoading,
   selectProducts,
+  selectProductsStatus,
 } from "../features/stockSlice";
 import { ErrorCard, NotFoundCard } from "../components/shared/InfoCards";
 import { TableSkeleton } from "../components/shared/Skeletons";
@@ -12,11 +12,12 @@ import DataTable from "../components/shared/table/data-table";
 import { useState } from "react";
 import { getProductColumns } from "../lib/Table-columns";
 import { ProductModal } from "../components/ProductModal";
+import { useEffectEvent } from "react";
 
 export default function Products() {
   const { getStockData, deleteStockData } = useStockCall();
   const error = useSelector(selectError);
-  const isLoading = useSelector(selectLoading);
+  const productsStatus = useSelector(selectProductsStatus);
   const products = useSelector(selectProducts);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -47,9 +48,17 @@ export default function Products() {
     onDelete: handleDelete,
   });
 
-  useEffect(() => {
+  const getData = useEffectEvent(() => {
     getStockData("products");
+  });
+
+  useEffect(() => {
+    getData();
   }, []);
+
+  const showLoadingSkeleton =
+    productsStatus === "idle" ||
+    (productsStatus === "loading" && products.length === 0);
 
   return (
     <section className="space-y-4 pt-3 px-5">
@@ -68,7 +77,7 @@ export default function Products() {
           </div>
           {error && <ErrorCard error={error} />}
 
-          {isLoading ? (
+          {showLoadingSkeleton ? (
             <TableSkeleton />
           ) : products.length === 0 ? (
             <NotFoundCard />

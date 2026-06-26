@@ -20,6 +20,7 @@ import FirmDetail from './pages/FirmDetail';
 import Purchases from './pages/Purchases';
 import Sales from './pages/Sales';
 import Products from './pages/Products';
+import DashboardHome from './pages/DashboardHome';
 
 const router = createBrowserRouter([
   { path: '/', element: <Home />, errorElement: <Error /> },
@@ -41,7 +42,7 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <div>Dashboard Home</div>,
+            element: <DashboardHome />,
           },
           {
             path: 'brands',

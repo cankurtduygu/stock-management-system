@@ -1,4 +1,4 @@
-import { Card, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardFooter, CardHeader, CardDescription, CardTitle, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
@@ -131,4 +131,51 @@ export function TableSkeleton() {
       </div>
     </div>
   );
+}
+
+export function DashboardHomeCardsSkeleton({ count = 4 }) {
+	return (
+		<div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+			{Array.from({ length: count }).map((_, idx) => (
+				<Card key={idx} className="@container/card">
+					{/* <CardHeader className="space-y-1">
+						<Skeleton className="h-4 w-28" />
+						<Skeleton className="h-6 w-36" />
+						<Skeleton className="h-6 w-20" />
+					</CardHeader> */}
+					<CardHeader>
+						<div className='flex justify-between '>
+							<CardDescription>Total Sales Revenue</CardDescription>
+							<Skeleton className="h-4 min-w-15" />
+						</div>
+						<Skeleton className="h-8 w-40" />
+					</CardHeader>
+					<CardFooter className="flex-col items-start gap-2">
+						<Skeleton className="h-4 w-52" />
+						<Skeleton className="h-4 w-40" />
+					</CardFooter>
+				</Card>
+			))}
+		</div>
+	)
+}
+
+
+export function DashboardHomeAreaChartSkeleton() {
+	return (
+		<Card className="pt-0">
+			<CardHeader className="flex items-center gap-2 space-y-0 border-b py-4 sm:flex-row">
+				<div className="grid flex-1 gap-2">
+					<CardTitle>Area Chart - Interactive</CardTitle>
+					<CardDescription>
+						Showing total visitors for the last 3 months
+					</CardDescription>
+				</div>
+				<Skeleton className="hidden h-10 w-40 rounded-lg sm:block" />
+			</CardHeader>
+			<CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+				<Skeleton className="h-52 w-full rounded-xl" />
+			</CardContent>
+		</Card>
+	)
 }

@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux";
 import {
   selectError,
-  selectLoading,
   selectSales,
+  selectSalesStatus,
 } from "../features/stockSlice";
 import { ErrorCard, NotFoundCard } from "../components/shared/InfoCards";
 import { TableSkeleton } from "../components/shared/Skeletons";
@@ -12,11 +12,12 @@ import DataTable from "../components/shared/table/data-table";
 import { useState } from "react";
 import { getSaleColumns } from "../lib/Table-columns";
 import { SaleModal } from "../components/SaleModal";
+import { useEffectEvent } from "react";
 
 export default function Sales() {
   const { getStockData, deleteStockData } = useStockCall();
   const error = useSelector(selectError);
-  const isLoading = useSelector(selectLoading);
+  const salesStatus = useSelector(selectSalesStatus);
   const sales = useSelector(selectSales);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -47,9 +48,17 @@ export default function Sales() {
     onDelete: handleDelete,
   });
 
-  useEffect(() => {
+  const getData = useEffectEvent(() => {
     getStockData("sales");
+  });
+
+  useEffect(() => {
+    getData();
   }, []);
+
+  const showLoadingSkeleton =
+    salesStatus === "idle" ||
+    (salesStatus === "loading" && sales.length === 0);
 
   return (
     <section className="space-y-4 pt-3 px-5">
@@ -59,13 +68,14 @@ export default function Sales() {
             <div className="flex flex-col gap-1">
               <h2 className="text-2xl font-semibold tracking-tight">Sales</h2>
               <p className="text-muted-foreground">
-               Track and manage all sales transactions by brand, product, quantity, price and amount.
+                Track and manage all sales transactions by brand, product,
+                quantity, price and amount.
               </p>
             </div>
           </div>
           {error && <ErrorCard error={error} />}
 
-          {isLoading ? (
+          {showLoadingSkeleton ? (
             <TableSkeleton />
           ) : sales.length === 0 ? (
             <NotFoundCard />

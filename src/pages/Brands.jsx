@@ -4,43 +4,56 @@ import { useSelector } from "react-redux";
 import {
   selectError,
   selectBrands,
-  selectLoading,
+  selectBrandsStatus,
 } from "../features/stockSlice";
 import { BrandCardsSkeleton } from "../components/shared/Skeletons";
 import { ErrorCard, NotFoundCard } from "../components/shared/InfoCards";
 import { useState } from "react";
 import BrandCard from "../components/BrandCard";
 import { BrandModal } from "../components/BrandModal";
+import { useEffectEvent } from "react";
 
 export default function Brands() {
   const { getStockData } = useStockCall();
   const brands = useSelector(selectBrands);
-  const isLoading = useSelector(selectLoading);
+  const brandsStatus = useSelector(selectBrandsStatus);
   const error = useSelector(selectError);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
 
-  useEffect(() => {
+  const getData = useEffectEvent(() => {
     getStockData("brands");
+  });
+
+  useEffect(() => {
+    getData();
   }, []);
 
   function handleModalChange(isOpen) {
     setModalOpen(isOpen);
-    setSelectedBrand(null)
+    setSelectedBrand(null);
   }
   function handleOpenEdit(brand) {
     setSelectedBrand(brand);
     setModalOpen(true);
   }
 
+  const showLoadingSkeleton =
+    brandsStatus === "idle" ||
+    (brandsStatus === "loading" && brands.length === 0);
+
   return (
     <section className="space-y-4 pt-3 px-5">
-      <BrandModal open={modalOpen} onOpenChange={handleModalChange} selectedBrand={selectedBrand} />
+      <BrandModal
+        open={modalOpen}
+        onOpenChange={handleModalChange}
+        selectedBrand={selectedBrand}
+      />
 
       {error && <ErrorCard error={error} />}
 
-      {isLoading ? (
+      {showLoadingSkeleton ? (
         <BrandCardsSkeleton />
       ) : brands.length === 0 ? (
         <NotFoundCard />
